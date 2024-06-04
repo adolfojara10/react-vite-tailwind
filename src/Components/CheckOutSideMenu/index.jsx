@@ -4,6 +4,7 @@ import { ShoppingCartContext } from '../../Context'
 import OrderCard from '../OrderCard'
 import { totalPrice } from '../../Utils'
 import './styles.css'
+import { Link } from 'react-router-dom'
 
 const CheckOutSideMenu = () => {
     const context = useContext(ShoppingCartContext)
@@ -11,6 +12,18 @@ const CheckOutSideMenu = () => {
     const handleDelete = (id) => {
         const filteredProducts = context.cartProducts.filter(pro => pro.id != id)
         context.setCartProducts(filteredProducts)
+    }
+
+    const handleCheckout = () => {
+        const orderToAdd = {
+            date: "01.02.23",
+            products: context.cartProducts,
+            totalProducts: context.cartProducts.length,
+            totalPrice: totalPrice(context.cartProducts)
+        }
+
+        context.setOrder([...context.order, orderToAdd])
+        context.setCartProducts([])
     }
 
     return (
@@ -31,7 +44,7 @@ const CheckOutSideMenu = () => {
                             key={product.id}
                             id={product.id}
                             title={product.title}
-                            imageURL={product.images}
+                            imageURL={product.images[0]}
                             price={product.price}
                             handleDelete={handleDelete}
 
@@ -40,11 +53,18 @@ const CheckOutSideMenu = () => {
                 }
             </div>
 
-            <div className='px-6'>
-                <p className='flex justify-between items-center'>
+            <div className='px-6 mb-6'>
+                <p className='flex justify-between items-center mb-2'>
                     <span className='font-light'>Total: </span>
                     <span className='font-medium text-2xl'>${totalPrice(context.cartProducts)}</span>
                 </p>
+                <Link to="/my-orders/last">
+                    <button className='w-full bg-black py-3 text-white rounded-lg '
+                        onClick={() => handleCheckout()}
+                    >
+                        Checkout
+                    </button>
+                </Link>
             </div>
         </aside>
     )
